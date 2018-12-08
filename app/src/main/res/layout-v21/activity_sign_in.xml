@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/signin_background"
+    android:background="@color/background"
     android:elevation="4dp"
     tools:context=".SignInActivity">
 
     <ImageView
-        android:id="@+id/signIn_img_id"
+        android:id="@+id/signInPage_img_id"
         android:layout_width="0dp"
         android:layout_height="254dp"
         android:layout_centerHorizontal="true"
@@ -22,7 +22,7 @@
         tools:ignore="ContentDescription" />
 
     <EditText
-        android:id="@+id/email_et_id"
+        android:id="@+id/signInPage_email_et_id"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_centerHorizontal="true"
@@ -40,11 +40,11 @@
         android:paddingEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signIn_img_id"
+        app:layout_constraintTop_toBottomOf="@+id/signInPage_img_id"
         tools:targetApi="o" />
 
     <EditText
-        android:id="@+id/password_et_id"
+        android:id="@+id/signInPage_password_et_id"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_centerHorizontal="true"
@@ -60,12 +60,12 @@
         android:paddingEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_et_id"
+        app:layout_constraintTop_toBottomOf="@+id/signInPage_email_et_id"
         android:inputType="textPassword"
         android:importantForAutofill="no" tools:targetApi="o" />
 
     <Button
-        android:id="@+id/signin_btn_id"
+        android:id="@+id/signInPage_signin_btn_id"
         android:layout_width="89dp"
         android:layout_height="41dp"
         android:layout_marginStart="8dp"
@@ -79,10 +79,10 @@
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_et_id" />
+        app:layout_constraintTop_toBottomOf="@+id/signInPage_password_et_id" />
 
     <Button
-        android:id="@+id/register_btn_id"
+        android:id="@+id/signInPage_register_btn_id"
         android:layout_width="174dp"
         android:layout_height="31dp"
         android:layout_marginStart="8dp"
@@ -95,7 +95,7 @@
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signin_btn_id"
+        app:layout_constraintTop_toBottomOf="@+id/signInPage_signin_btn_id"
         android:textAllCaps="false"/>
 
 

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "160240394472",
+    "firebase_url": "https://farmart-edd58.firebaseio.com",
+    "project_id": "farmart-edd58",
+    "storage_bucket": "farmart-edd58.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160240394472:android:1a9a57766049add4",
+        "android_client_info": {
+          "package_name": "com.farmart.thefarmart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "160240394472-mqe55hcdnsrc1g9l1fsf4qutgkbfu6kg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaH43pwRBUdbbPFVWp8gJpGrMDr_rO-B8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

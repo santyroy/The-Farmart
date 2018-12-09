@@ -2,23 +2,35 @@ package com.farmart.thefarmart;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.farmart.thefarmart.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,13 +40,22 @@ public class RegistrationActivity extends AppCompatActivity {
     private String name;
     private String email;
     private String password;
-    private FirebaseAuth mAuth;
+    private Uri mImageUri;
+
+    private FirebaseAuth mAuthRef;
+    private StorageReference mStorageRef;
+    private DatabaseReference mDatabaseRef;
+
+    private StorageTask mUploadTask;
 
     private EditText name_et;
     private EditText email_et;
     private EditText password_et;
+    private ImageView profile_picture_iv;
     private ProgressDialog progressDialog;
+    private ProgressBar progressBar;
 
+    public static final int PICK_IMAGE_REQ_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +65,15 @@ public class RegistrationActivity extends AppCompatActivity {
         name_et = findViewById(R.id.registrationPage_name_et);
         email_et = findViewById(R.id.registrationPage_email_et);
         password_et = findViewById(R.id.registrationPage_password_et);
+        profile_picture_iv = findViewById(R.id.registrationPage_profile_picture_iv);
         Button registerButton_btn = findViewById(R.id.registrationPage_register_btn);
         progressDialog = new ProgressDialog(this);
+        progressBar = findViewById(R.id.registrationPage_ImageUploadProgressBar_id);
 
-        mAuth = FirebaseAuth.getInstance();
+        mAuthRef = FirebaseAuth.getInstance();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+
 
         registerButton_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,12 +81,22 @@ public class RegistrationActivity extends AppCompatActivity {
                 name = name_et.getText().toString();
                 email = email_et.getText().toString();
                 password = password_et.getText().toString();
+
                 boolean isValid = validate(name, email, password);
                 if (isValid) {
                     createAccount();
                 }
             }
         });
+
+        profile_picture_iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileChooser();
+            }
+        });
+
+
     }
 
     @Override
@@ -97,18 +133,16 @@ public class RegistrationActivity extends AppCompatActivity {
     private void createAccount() {
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
-        mAuth.createUserWithEmailAndPassword(email, password)
+        mAuthRef.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            progressDialog.dismiss();
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
+                            if (!(mUploadTask != null && (mUploadTask.isInProgress()))) {
                                 sendVerificationEmail();
                             }
-
+                            progressDialog.dismiss();
                         } else {
                             progressDialog.dismiss();
                             // If sign in fails, display a message to the user.
@@ -120,31 +154,72 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void sendVerificationEmail() {
-        final FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser user = mAuthRef.getCurrentUser();
         if (user != null) {
             user.sendEmailVerification()
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                uploadUser();
-                                mAuth.signOut();
+                                uploadUserImage();
+                                mAuthRef.signOut();
                                 Toast.makeText(RegistrationActivity.this, "Registration Successful. Verification email sent", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(RegistrationActivity.this, SignInActivity.class));
                                 finish();
-
                             }
                         }
                     });
         }
     }
 
-    private void uploadUser() {
-        //Creating an instance of FirebaseDatabase
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        //Creating a database reference for the current user using its UUID
-        DatabaseReference databaseReference = firebaseDatabase.getReference(mAuth.getUid());
-        //Passing the user as a parameter to database reference
-        databaseReference.setValue(new User(name, email));
+    private void uploadUserImage() {
+
+        Uri file = mImageUri;
+        StorageReference childRef = mStorageRef.child("images/" + mAuthRef.getUid() + "/profile_picture.jpg");
+        mUploadTask = childRef.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setProgress(0);
+                    }
+                }, 500);
+
+                String downloadImageURL = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+                User user = new User(name, email, downloadImageURL);
+                String uploadID = mDatabaseRef.push().getKey();
+                mDatabaseRef.child(uploadID).setValue(user);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(RegistrationActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                progressBar.setProgress((int) progress);
+            }
+        });
+    }
+
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQ_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQ_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            mImageUri = data.getData();
+            Picasso.get().load(mImageUri).into(profile_picture_iv);
+        }
     }
 }

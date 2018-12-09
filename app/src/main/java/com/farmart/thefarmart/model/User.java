@@ -4,13 +4,15 @@ public class User {
 
     private String name;
     private String email;
+    private String imageURI;
 
     public User() {
     }
 
-    public User(String name, String email) {
+    public User(String name, String email, String imageURI) {
         this.name = name;
         this.email = email;
+        this.imageURI = imageURI;
     }
 
     public String getName() {
@@ -27,5 +29,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImageURI() {
+        return imageURI;
+    }
+
+    public void setImageURI(String imageURI) {
+        this.imageURI = imageURI;
     }
 }

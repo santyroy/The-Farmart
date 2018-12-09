@@ -11,14 +11,15 @@
 
     <ImageView
         android:id="@+id/registrationPage_profile_picture_iv"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
-        android:src="@drawable/add_a_photo_black"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_account_circle_black_24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,13 +28,16 @@
         android:id="@+id/registrationPage_name_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="260dp"
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationPage_profile_picture_iv" />
+        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
     <EditText
         android:id="@+id/registrationPage_email_et"
@@ -61,7 +65,7 @@
         android:id="@+id/registrationPage_register_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="36dp"
         android:background="@drawable/register_btn_rectangle"
         android:text="Register"
         android:textAllCaps="false"
@@ -69,4 +73,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registrationPage_password_et" />
+
+    <ProgressBar
+        android:id="@+id/registrationPage_ImageUploadProgressBar_id"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/registrationPage_profile_picture_iv"
+        app:layout_constraintStart_toStartOf="@+id/registrationPage_profile_picture_iv"
+        app:layout_constraintTop_toBottomOf="@+id/registrationPage_profile_picture_iv" />
 </android.support.constraint.ConstraintLayout>

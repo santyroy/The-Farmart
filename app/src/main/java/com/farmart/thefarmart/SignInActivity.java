@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,6 +37,7 @@ public class SignInActivity extends AppCompatActivity {
         password_et = findViewById(R.id.signInPage_password_et_id);
         Button signin_btn = findViewById(R.id.signInPage_signin_btn_id);
         Button register_btn = findViewById(R.id.signInPage_register_btn_id);
+        TextView forgotPassword = findViewById(R.id.signInPage_forot_password_tv_id);
         progressDialog = new ProgressDialog(this);
 
         // Initialize Firebase Auth
@@ -58,6 +60,14 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SignInActivity.this, RegistrationActivity.class));
+                finish();
+            }
+        });
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SignInActivity.this, ForgetPasswordActivity.class));
                 finish();
             }
         });
